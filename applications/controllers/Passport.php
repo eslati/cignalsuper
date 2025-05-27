@@ -53,6 +53,15 @@ class Passport extends CI_Controller {
 		}
 	}
 
+	public function resend_otp()
+	{
+		if ($this->session->loggedin) {
+			redirect('/');
+		} else {
+			$this->play->resendOtp();
+		}
+	}
+
 	public function logmein()
 	{
 		if ($this->session->loggedin) {

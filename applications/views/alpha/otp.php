@@ -25,13 +25,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<h2 class="squada-one-regular">PASSPORT</h2>
 		<h3>OTP</h3>
 		<div class="reg-form">
-			<form action="" method="POST">
+			<?php if (!empty($error)): ?>
+				<p class="text-light text-center fs-2"><?php echo $error?></p>
+			<?php endif; ?>
+			<form action="otp" method="POST">
 				<div class="mb-5">
 					<!-- <label for="otp">OTP</label><br> -->
 					<input type="text" id="otp" name="otp" pattern="\d{4}" placeholder="XXXX" maxlength="4" required>
 				</div>
+				<div class="text-center mb-3">
+					<button type="submit"><img src="images/B_Submit.png"  alt="Submit"></button>
+				</div>
+			</form>
+
+			<form action="resend-otp" method="POST">
 				<div class="text-center">
-					<button type="submit"><img src="images/B_Submit.png" alt="Submit"></button>
+					<button class="text-light fs-5" type="submit">Resend One-Time Password</button>
 				</div>
 			</form>
 		</div>

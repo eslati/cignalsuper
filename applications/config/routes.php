@@ -53,6 +53,7 @@ $route['destroy'] = 'passport/destro';
 $route['privacy'] = 'passport/priv';
 $route['register'] = 'passport/regist';
 $route['otp'] = 'passport/otp';
+$route['resend-otp'] = 'passport/resend_otp';
 $route['login'] = 'passport/logmein';
 $route['default_controller'] = 'passport';
 $route['404_override'] = '';

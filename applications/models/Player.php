@@ -40,12 +40,11 @@ class Player extends CI_Model {
 							return TRUE;
 
 						} else {
-							$this->session->set_userdata(array(
-								'loggedin'	=>	$res['id'],
-								'name'		=>	$res['data'],
-								'qr'		=>	$res['qr']
-							) );
-							$this->otpLogin();
+							$this->session->set_userdata([
+								'otp_user_id' => $res['id'],
+								'otp_email'   => $res['email']
+							]);
+							redirect('otp');
 						}
 
 					} else {
@@ -126,9 +125,9 @@ class Player extends CI_Model {
 			} else {
 				
 				$id = $this->db->insert_id();
-				// include('/var/www/dev/applications/phpqrcode/qrlib.php');
+				include('/var/www/dev/applications/phpqrcode/qrlib.php');
 				$fname = md5($id);
-				// QRcode::png(str_pad($id, 8, 0, STR_PAD_LEFT), "qr/$fname.png", QR_ECLEVEL_L, 10);
+				QRcode::png(str_pad($id, 8, 0, STR_PAD_LEFT), "qr/$fname.png", QR_ECLEVEL_L, 10);
 
 				// $this->db->where('id', $id)
 				// 		->set('qr', "$fname.png")
@@ -146,9 +145,14 @@ class Player extends CI_Model {
 					'qr'	=>	"$fname.png"
 				) );
 				
+				$this->session->set_userdata([
+					'otp_user_id' => $this->db->insert_id(),
+					'otp_email'   => $this->input->post('email')
+				]);
+
 				$email = $this->input->post('email');
 				
-				$this->sendOtp($email, $id);
+				$this->sendOtp($email, $this->db->insert_id());
 				redirect('otp');
 			}
 		} else {
@@ -166,11 +170,13 @@ class Player extends CI_Model {
 
 
 			if ($this->form_validation->run() === FALSE) {
-				$this->load->view('alpha/otp');
+				
+			    $error = $this->session->flashdata('error');
+				$this->load->view('alpha/otp', ['error' => $error]);
 
 			} else {
 				$otp 		= 	$this->input->post('otp');
-				$query    =   $this->db->select('user_id')
+				$query 		= 	$this->db->select('user_id, email')
 									->from('otp')
 									->where('otp', $otp)
 									->order_by('id', 'DESC')
@@ -178,9 +184,13 @@ class Player extends CI_Model {
 									->get();
 
 				if ($query->num_rows() > 0) {
-					$user_id = $query->row()->user_id;
+					$row 		= $query->row();
+					$user_id 	= $row->user_id;
+					$email   	= $row->email;
+
 				} else {
-					$user_id = null; // or handle the "not found" case
+					$user_id 	= null;
+					$email  	= null;
 				}
 
 				$sql = $this->db->select('*')
@@ -208,11 +218,20 @@ class Player extends CI_Model {
 						->get();
 					$res = $sql->row_array();
 
+					$this->session->set_userdata(array(
+						'loggedin'	=>	$res['id'],
+						'name'		=>	$res['data'],
+						'qr'		=>	$res['qr']
+					) );
+
 					redirect('/');
 
-				}else{
-					return 'FALSE_SEND';  
+				} else {
+					$this->session->set_flashdata('error', 'Incorrect OTP entered!');
+					redirect('/otp');
 				}
+
+
 
 			}
 			
@@ -221,69 +240,13 @@ class Player extends CI_Model {
 		}
 	}
 
-	public function otpLogin()
-	{
-		if ($this->_checkEvent() ) {
+	public function resendOtp() {
+		$user_id = $this->session->userdata('otp_user_id');
+		$email   = $this->session->userdata('otp_email');
 
-			$this->load->library('form_validation');
-			$this->form_validation->set_error_delimiters('', '');
-			$this->form_validation->set_rules('otp', 'OTP', 'trim|required|max_length[4]');
-
-
-			if ($this->form_validation->run() === FALSE) {
-				$this->load->view('alpha/otp');
-
-			} else {
-				$otp 		= 	$this->input->post('otp');
-				$query    =   $this->db->select('user_id')
-									->from('otp')
-									->where('otp', $otp)
-									->order_by('id', 'DESC')
-									->limit(1)
-									->get();
-
-				if ($query->num_rows() > 0) {
-					$user_id = $query->row()->user_id;
-				} else {
-					$user_id = null; // or handle the "not found" case
-				}
-
-				$sql = $this->db->select('*')
-					->from('otp')
-					->where('user_id', $user_id)
-					->order_by('id', 'DESC')
-					->limit(1)
-					->get();
-
-				$res = $sql->row_array();
-						
-				if($res['otp'] == $otp){
-					$this->db->set('active', 'Y')
-						->where('id', $user_id)
-						->update('player');
-					
-					$array = array(
-						'id' 	=> $user_id,
-					);
-
-					$sql = $this->db->select('*')
-						->from('player')
-						->where($array)
-						->limit(1)
-						->get();
-					$res = $sql->row_array();
-
-					return TRUE;
-
-				}else{
-					return 'FALSE_SEND';  
-				}
-
-			}
-			
-		} else {
-			$this->load->view('alpha/notime');
-		}
+		$this->sendOtp($email, $user_id);
+		$this->session->set_flashdata('error', 'New OTP has been sent!');
+		redirect('/otp');
 	}
 
 	public function sendOtp($email, $user_id){
@@ -296,7 +259,7 @@ class Player extends CI_Model {
 		);
 
 		$this->db->insert('otp', $data);
-		$this->send_test_email($email, $otp);
+		$this->sendEmail($email, $otp);
 
 		$res = ($this->db->affected_rows() != 1) ? false : true;
 		return $res;

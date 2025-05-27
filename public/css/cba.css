@@ -1,0 +1,29 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+html, body {
+  min-height: 100%;
+  min-width: 100%;
+  height: fit-content;
+  width: fit-content;
+}
+
+body {
+    background: url('../images/BG.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+#logoutBtn {
+    font-size: 12px; 
+    font-weight: 700;
+}
+
+@media (max-width: 576px) {
+    #logoutBtn {
+        font-size: 10px; 
+    }
+}

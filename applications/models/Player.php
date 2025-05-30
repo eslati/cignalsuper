@@ -48,7 +48,7 @@ class Player extends CI_Model {
 						}
 
 					} else {
-						$this->form_validation->set_message('validmobile', 'mobile not registered');
+						$this->form_validation->set_message('validmobile', 'Mobile number is not yet registered!');
 						return FALSE;
 					}
 				}
@@ -105,7 +105,22 @@ class Player extends CI_Model {
 			$this->load->library('form_validation');
 			$this->form_validation->set_error_delimiters('', '');
 			$this->form_validation->set_rules('name', 'Name', 'trim|required|max_length[80]');
-			$this->form_validation->set_rules('mobile', 'Mobile', array('trim','required','max_length[11]',array(
+			
+			$this->form_validation->set_rules('email', 'Email', array('trim', 'required', 'valid_email', 'max_length[100]', array(
+				'validemail', function($email) {
+					$res = $this->db->where('email', $email)
+									->get('player')
+									->row_array();
+					if (empty($res['id'])) {
+						return TRUE;
+					} else {
+						$this->form_validation->set_message('validemail', '* Your email address is already registered!');
+						return FALSE;
+					}
+				} )
+			));
+
+			$this->form_validation->set_rules('mobile', 'Mobile', array('trim', 'required', 'max_length[11]', array(
 				'validmobile', function($mobile) {
 					$res = $this->db->where('mobile', substr($mobile, 1) )
 									->get('player')
@@ -113,21 +128,21 @@ class Player extends CI_Model {
 					if (isset($res['id']) == 0) {
 						return TRUE;
 					} else {
-						$this->form_validation->set_message('validmobile', 'mobile already registered');
+						$this->form_validation->set_message('validmobile', '* Your mobile number is already registered!');
 						return FALSE;
 					}
 				} )
 			));
-			$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|max_length[100]');
 
 			if ($this->form_validation->run() === FALSE) {
+			    $error = $this->session->flashdata('error');
 				$this->load->view('alpha/register');
 			} else {
 				
 				$id = $this->db->insert_id();
-				include('/var/www/dev/applications/phpqrcode/qrlib.php');
+				// include('/var/www/dev/applications/phpqrcode/qrlib.php');
 				$fname = md5($id);
-				QRcode::png(str_pad($id, 8, 0, STR_PAD_LEFT), "qr/$fname.png", QR_ECLEVEL_L, 10);
+				// QRcode::png(str_pad($id, 8, 0, STR_PAD_LEFT), "qr/$fname.png", QR_ECLEVEL_L, 10);
 
 				// $this->db->where('id', $id)
 				// 		->set('qr', "$fname.png")
@@ -176,22 +191,8 @@ class Player extends CI_Model {
 
 			} else {
 				$otp 		= 	$this->input->post('otp');
-				$query 		= 	$this->db->select('user_id, email')
-									->from('otp')
-									->where('otp', $otp)
-									->order_by('id', 'DESC')
-									->limit(1)
-									->get();
-
-				if ($query->num_rows() > 0) {
-					$row 		= $query->row();
-					$user_id 	= $row->user_id;
-					$email   	= $row->email;
-
-				} else {
-					$user_id 	= null;
-					$email  	= null;
-				}
+				$user_id = $this->session->userdata('otp_user_id') ?? null;
+				$email   = $this->session->userdata('otp_email') ?? null;
 
 				$sql = $this->db->select('*')
 					->from('otp')
@@ -231,8 +232,6 @@ class Player extends CI_Model {
 					redirect('/otp');
 				}
 
-
-
 			}
 			
 		} else {
@@ -263,6 +262,40 @@ class Player extends CI_Model {
 
 		$res = ($this->db->affected_rows() != 1) ? false : true;
 		return $res;
+	}
+
+	public function send_test_email($email, $otp) {
+		// Load email library
+		$this->load->library('email');
+
+		// Email configuration
+		$config = [
+			'protocol'  => 'smtp',
+			'smtp_host' => 'smtp.gmail.com',
+			'smtp_port' => 465,
+			'smtp_user' => 'emerson@mymegamobile.com',         // replace with your Gmail
+			'smtp_pass' => 'uxdf fnky yjzv pfrf',            // use app password, NOT Gmail password
+			'smtp_crypto' => 'ssl',                        // or 'ssl' if using port 465
+			'mailtype'  => 'html',
+			'charset'   => 'utf-8',
+			'newline'   => "\r\n"
+		];
+
+		$this->email->initialize($config);
+
+		// Compose the email
+		$this->email->from('emerson@mymegamobile.com', 'Emerson');
+		$this->email->to($email);
+		$this->email->subject('Cignal ePassport OTP');
+		$this->email->message('<strong>Your One-Time-Password is ' . $otp . '.</strong>');
+
+		// Send email
+		if ($this->email->send()) {
+			echo "Email sent successfully!";
+		} else {
+			echo "Email failed to send.<br>";
+			echo $this->email->print_debugger(['headers']);
+		}
 	}
 
 	public function sendEmail($email, $otp){

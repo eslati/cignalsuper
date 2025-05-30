@@ -26,7 +26,7 @@
 		<h3>LOGIN</h3>
 		<h3 class="pt-5">WELCOME BACK!</h3>
 		<div class="reg-form">
-		<p class="text-center fs-2" style="color: crimson; text-shadow: 1px 1px 10px rgba(255, 255, 255, 0.66);"><?php echo form_error('mobile'); ?></p>
+		<p class="error-color text-center fs-2"><?php echo form_error('mobile'); ?></p>
 			<form id="loginForm" action="" method="POST">	
 				<div class="mb-5">
 					<label for="name">MOBILE NUMBER</label><br>

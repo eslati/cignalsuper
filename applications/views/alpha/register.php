@@ -33,12 +33,12 @@
 				<div class="mb-4">
 					<label for="name">EMAIL</label><br>
 					<input type="email" id="email" name="email" placeholder="EMAIL" required>
-					<p class="text-light fs-6 fw-normal fw-semibold form-error mt-1"><?php echo form_error('email'); ?></p>
+					<p class="error-color fs-6 fw-normal fw-semibold form-error mt-1"><?php echo form_error('email'); ?></p>
 				</div>
 				<div class="mb-5">
 					<label for="mobile">MOBILE NUMBER</label><br>
 					<input type="text" id="mobile" name="mobile" placeholder="09XX XXX XXXX" pattern="09\d{2}\d{3}\d{4}" maxlength="11" required>	
-					<p class="text-light fs-6 fw-normal fw-semibold form-error mt-1"><?php echo form_error('mobile'); ?></p>
+					<p class="error-color fs-6 fw-normal fw-semibold form-error mt-1"><?php echo form_error('mobile'); ?></p>
 				</div>
 				<div class="pp-checkbox d-flex flex-nowrap justify-content-center align-items-center mb-2">
 					<input type="checkbox" id="terms" name="privacy-policy" class="text-center" required>

@@ -83,6 +83,7 @@ body {
 .reg-form label {
   color: white;
   font-size: 20px;
+  font-family: Arial, sans-serif;
 }
 
 .reg-form input {
@@ -90,6 +91,15 @@ body {
   font-size: 26px;
   padding: 12px 15px;
   border: none;
+  font-family: Arial, sans-serif;
+}
+
+.reg-form .form-error {
+  font-family: Arial, sans-serif;
+}
+
+.reg-form a {
+  font-family: Arial, sans-serif;
 }
 
 .reg-form button {

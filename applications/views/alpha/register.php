@@ -1,12 +1,12 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+	defined('BASEPATH') OR exit('No direct script access allowed');
 ?><!DOCTYPE html>
 <html lang="en">
 <head>
 	<base href="<?php echo $this->config->base_url(); ?>" target="_self">
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link href="favicon.ico" rel="icon" type="image/x-icon">
+	<link rel="icon" href="<?php echo base_url('images/CIGNAL SUPER logo.png') ?>" type="image/png">
 	<title>Cignal Super - Registration</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,10 +33,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div class="mb-4">
 					<label for="name">EMAIL</label><br>
 					<input type="email" id="email" name="email" placeholder="EMAIL" required>
+					<p class="text-light fs-6 fw-normal fw-semibold form-error mt-1"><?php echo form_error('email'); ?></p>
 				</div>
 				<div class="mb-5">
 					<label for="mobile">MOBILE NUMBER</label><br>
-					<input type="text" id="mobile" name="mobile" placeholder="09XX XXX XXXX" pattern="09\d{2}\d{3}\d{4}" maxlength="11" required>
+					<input type="text" id="mobile" name="mobile" placeholder="09XX XXX XXXX" pattern="09\d{2}\d{3}\d{4}" maxlength="11" required>	
+					<p class="text-light fs-6 fw-normal fw-semibold form-error mt-1"><?php echo form_error('mobile'); ?></p>
 				</div>
 				<div class="pp-checkbox d-flex flex-nowrap justify-content-center align-items-center mb-2">
 					<input type="checkbox" id="terms" name="privacy-policy" class="text-center" required>

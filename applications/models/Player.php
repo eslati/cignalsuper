@@ -264,40 +264,6 @@ class Player extends CI_Model {
 		return $res;
 	}
 
-	public function send_test_email($email, $otp) {
-		// Load email library
-		$this->load->library('email');
-
-		// Email configuration
-		$config = [
-			'protocol'  => 'smtp',
-			'smtp_host' => 'smtp.gmail.com',
-			'smtp_port' => 465,
-			'smtp_user' => 'emerson@mymegamobile.com',         // replace with your Gmail
-			'smtp_pass' => 'uxdf fnky yjzv pfrf',            // use app password, NOT Gmail password
-			'smtp_crypto' => 'ssl',                        // or 'ssl' if using port 465
-			'mailtype'  => 'html',
-			'charset'   => 'utf-8',
-			'newline'   => "\r\n"
-		];
-
-		$this->email->initialize($config);
-
-		// Compose the email
-		$this->email->from('emerson@mymegamobile.com', 'Emerson');
-		$this->email->to($email);
-		$this->email->subject('Cignal ePassport OTP');
-		$this->email->message('<strong>Your One-Time-Password is ' . $otp . '.</strong>');
-
-		// Send email
-		if ($this->email->send()) {
-			echo "Email sent successfully!";
-		} else {
-			echo "Email failed to send.<br>";
-			echo $this->email->print_debugger(['headers']);
-		}
-	}
-
 	public function sendEmail($email, $otp){
 		$msg = "Your One-Time-Password is " . $otp . ".";
 		$subject = "Cignal ePassport OTP";

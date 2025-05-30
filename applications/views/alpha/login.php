@@ -1,12 +1,12 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+	defined('BASEPATH') OR exit('No direct script access allowed');
 ?><!DOCTYPE html>
 <html lang="en">
 <head>
 	<base href="<?php echo $this->config->base_url(); ?>" target="_self">
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link href="favicon.ico" rel="icon" type="image/x-icon">
+	<link rel="icon" href="<?php echo base_url('images/CIGNAL SUPER logo.png') ?>" type="image/png">
 	<title>Cignal Super - Login</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,19 +26,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<h3>LOGIN</h3>
 		<h3 class="pt-5">WELCOME BACK!</h3>
 		<div class="reg-form">
-		<form id="loginForm" action="" method="POST">	
-			<div class="mb-5">
-				<label for="name">MOBILE NUMBER</label><br>
-				<input type="text" id="name" name="mobile" placeholder="09XX XXX XXXX" pattern="09\d{2}\d{3}\d{4}" maxlength="11" required>
-			</div>
-			<div class="pp-checkbox d-flex flex-nowrap justify-content-center align-items-center mb-2">
-				<input type="checkbox" id="terms" name="privacy-policy" class="text-center" required>
-				<label for="privacy-policy" class="text-light mb-0">I understand and agree to the <a target="_blank" href="privacy" class="text-light">Privacy Policy</label>
-			</div>
-			<div class="text-center">
-				<button type="submit"><img src="images/B_Submit.png" alt="Submit"></button>
-			</div>
-		</form>
+		<p class="text-center fs-2" style="color: crimson; text-shadow: 1px 1px 10px rgba(255, 255, 255, 0.66);"><?php echo form_error('mobile'); ?></p>
+			<form id="loginForm" action="" method="POST">	
+				<div class="mb-5">
+					<label for="name">MOBILE NUMBER</label><br>
+					<input type="text" id="name" name="mobile" placeholder="09XX XXX XXXX" pattern="09\d{2}\d{3}\d{4}" maxlength="11" required>
+				</div>
+				<div class="pp-checkbox d-flex flex-nowrap justify-content-center align-items-center mb-2">
+					<input type="checkbox" id="terms" name="privacy-policy" class="text-center" required>
+					<label for="privacy-policy" class="text-light mb-0">I understand and agree to the <a target="_blank" href="privacy" class="text-light">Privacy Policy</label>
+				</div>
+				<div class="text-center">
+					<button type="submit"><img src="images/B_Submit.png" alt="Submit"></button>
+				</div>
+			</form>
 		</div>
 	</section>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>

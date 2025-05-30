@@ -26,7 +26,7 @@
 		<h3>OTP</h3>
 		<div class="reg-form">
 			<?php if (!empty($error)): ?>
-				<p class="text-light text-center fs-2"><?php echo $error?></p>
+				<p class="error-color text-center fs-2"><?php echo $error?></p>
 			<?php endif; ?>
 			<form action="otp" method="POST">
 				<div class="mb-5">

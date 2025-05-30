@@ -75,7 +75,7 @@ body {
 
 .error-color {
   color: rgb(255, 5, 5);
-  text-shadow: 1px 1px 3px rgba(2, 2, 2, 0.7);
+  text-shadow: 1px 1px 7px rgba(2, 2, 2, 0.7);
 }
 
 /* Registration and Login */

@@ -183,6 +183,7 @@ class Player extends CI_Model {
 			$this->form_validation->set_error_delimiters('', '');
 			$this->form_validation->set_rules('otp', 'OTP', 'trim|required|max_length[4]');
 
+			$otp_error_count = $this->session->userdata('otp_error_count') ?? null;
 
 			if ($this->form_validation->run() === FALSE) {
 				
@@ -202,7 +203,7 @@ class Player extends CI_Model {
 					->get();
 
 				$res = $sql->row_array();
-						
+				
 				if($res['otp'] == $otp){
 					$this->db->set('active', 'Y')
 						->where('id', $user_id)
@@ -228,7 +229,18 @@ class Player extends CI_Model {
 					redirect('/');
 
 				} else {
-					$this->session->set_flashdata('error', 'Incorrect OTP entered!');
+					
+					$this->session->set_userdata([
+						'otp_error_count' => $otp_error_count + 1
+					]);
+					
+					if ($otp_error_count >= 1) {
+						$this->resendOtp();
+
+					} else {
+						$this->session->set_flashdata('error', 'Incorrect OTP entered!');
+					}
+
 					redirect('/otp');
 				}
 
@@ -240,11 +252,21 @@ class Player extends CI_Model {
 	}
 
 	public function resendOtp() {
-		$user_id = $this->session->userdata('otp_user_id');
-		$email   = $this->session->userdata('otp_email');
+		$user_id 			= $this->session->userdata('otp_user_id');
+		$email   			= $this->session->userdata('otp_email');
+		$otp_error_count	= $this->session->userdata('otp_error_count') ?? null;
 
 		$this->sendOtp($email, $user_id);
-		$this->session->set_flashdata('error', 'New OTP has been sent!');
+
+		if ($otp_error_count >= 1) {
+			$this->session->set_flashdata('error', "You failed twice! We’ve sent a new OTP to your email");
+			$this->session->set_userdata([
+				'otp_error_count' => 0
+			]);
+		} else {
+			$this->session->set_flashdata('error', 'New OTP has been sent!');
+		}
+		
 		redirect('/otp');
 	}
 

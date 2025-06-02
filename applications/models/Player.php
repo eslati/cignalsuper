@@ -140,18 +140,9 @@ class Player extends CI_Model {
 			} else {
 				
 				$id = $this->db->insert_id();
-				// include('/var/www/dev/applications/phpqrcode/qrlib.php');
+				include('/var/www/dev/applications/phpqrcode/qrlib.php');
 				$fname = md5($id);
-				// QRcode::png(str_pad($id, 8, 0, STR_PAD_LEFT), "qr/$fname.png", QR_ECLEVEL_L, 10);
-
-				// $this->db->where('id', $id)
-				// 		->set('qr', "$fname.png")
-				// 		->update('player');
-				// $this->session->set_userdata(array(
-				// 	'loggedin'	=>	$id,
-				// 	'name'		=>	$this->input->post('name'),
-				// 	'qr'		=>	"$fname.png"
-				// ) );
+				QRcode::png(str_pad($id, 8, 0, STR_PAD_LEFT), "qr/$fname.png", QR_ECLEVEL_L, 10);
 				
 				$this->db->insert('player', array(
 					'mobile'=>	substr($this->input->post('mobile'), 1),

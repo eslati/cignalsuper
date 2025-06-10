@@ -5,7 +5,6 @@ class Player extends CI_Model {
 
 	private function _checkEvent()
 	{
-		date_default_timezone_set('Asia/Manila');
 		$cur = date('Y-m-d H:i:s');
 		$res = $this->db->where('start <', $cur)
 						->where('end >', $cur)
@@ -152,7 +151,7 @@ class Player extends CI_Model {
 					'otp_email'   	=> 	$this->input->post('email')
 				]);
 				
-				include('/var/www/dev/applications/phpqrcode/qrlib.php');
+				include('../phpqrcode/qrlib.php');
 				$fname = md5($id);
 				QRcode::png(str_pad($id, 8, 0, STR_PAD_LEFT), "qr/$fname.png", QR_ECLEVEL_L, 10);
 				

@@ -137,28 +137,32 @@ class Player extends CI_Model {
 			if ($this->form_validation->run() === FALSE) {
 			    $error = $this->session->flashdata('error');
 				$this->load->view('alpha/register');
+
 			} else {
-				
+				$this->db->insert('player', array(
+					'mobile'=>	substr($this->input->post('mobile'), 1),
+					'data'	=>	$this->input->post('name'),
+					'email' => 	$this->input->post('email')
+				) );
+
 				$id = $this->db->insert_id();
+				
+				$this->session->set_userdata([
+					'otp_user_id' 	=> 	$this->db->insert_id(),
+					'otp_email'   	=> 	$this->input->post('email')
+				]);
+				
 				include('/var/www/dev/applications/phpqrcode/qrlib.php');
 				$fname = md5($id);
 				QRcode::png(str_pad($id, 8, 0, STR_PAD_LEFT), "qr/$fname.png", QR_ECLEVEL_L, 10);
 				
-				$this->db->insert('player', array(
-					'mobile'=>	substr($this->input->post('mobile'), 1),
-					'data'	=>	$this->input->post('name'),
-					'email' => 	$this->input->post('email'),
-					'qr'	=>	"$fname.png"
-				) );
-				
-				$this->session->set_userdata([
-					'otp_user_id' => $this->db->insert_id(),
-					'otp_email'   => $this->input->post('email')
-				]);
+				$this->db->where('id', $id)
+					->set('qr', "$fname.png")
+					->update('player');
 
 				$email = $this->input->post('email');
 				
-				$this->sendOtp($email, $this->db->insert_id());
+				$this->sendOtp($email);
 				redirect('otp');
 			}
 		} else {
@@ -183,8 +187,8 @@ class Player extends CI_Model {
 
 			} else {
 				$otp 		= 	$this->input->post('otp');
-				$user_id = $this->session->userdata('otp_user_id') ?? null;
-				$email   = $this->session->userdata('otp_email') ?? null;
+				$user_id 	= 	$this->session->userdata('otp_user_id') ?? null;
+				$email   	= 	$this->session->userdata('otp_email') ?? null;
 
 				$sql = $this->db->select('*')
 					->from('otp')
@@ -247,7 +251,7 @@ class Player extends CI_Model {
 		$email   			= $this->session->userdata('otp_email');
 		$otp_error_count	= $this->session->userdata('otp_error_count') ?? null;
 
-		$this->sendOtp($email, $user_id);
+		$this->sendOtp($email);
 
 		if ($otp_error_count >= 1) {
 			$this->session->set_flashdata('error', "You failed twice! We’ve sent a new OTP to your email");
@@ -261,13 +265,16 @@ class Player extends CI_Model {
 		redirect('/otp');
 	}
 
-	public function sendOtp($email, $user_id){
+	public function sendOtp($email){
 		$otp = rand(1000, 9999);
+		$res = $this->db->where('email', $email)
+			->get('player')
+			->row_array();
 
 		$data = array(
 			'email'		=> $email,
 			'otp'		=> $otp,
-			'user_id'	=> $user_id
+			'user_id'	=> $res[id]
 		);
 
 		$this->db->insert('otp', $data);

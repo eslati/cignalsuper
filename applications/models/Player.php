@@ -273,7 +273,7 @@ class Player extends CI_Model {
 		$data = array(
 			'email'		=> $email,
 			'otp'		=> $otp,
-			'user_id'	=> $res[id]
+			'user_id'	=> $res['id']
 		);
 
 		$this->db->insert('otp', $data);
